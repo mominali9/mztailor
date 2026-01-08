@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}Services - MZ Tailors{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Animated Background -->
+<section class="relative bg-gradient-to-br from-navy via-light-navy to-navy py-24 text-white overflow-hidden">
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0">
+        <div class="absolute top-20 left-20 w-64 h-64 bg-gold/10 rounded-full blur-3xl animate-float" style="animation-delay: 0s;"></div>
+        <div class="absolute bottom-20 right-20 w-80 h-80 bg-white/5 rounded-full blur-3xl animate-float" style="animation-delay: 3s;"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gold/5 rounded-full blur-3xl animate-pulse"></div>
+    </div>
+    
+    <!-- Floating Icons -->
+    <div class="absolute inset-0 overflow-hidden">
+        <i class="fas fa-tshirt absolute top-32 left-16 text-gold/20 text-4xl animate-float" style="animation-delay: 1s;"></i>
+        <i class="fas fa-user-tie absolute top-48 right-24 text-white/10 text-5xl animate-float" style="animation-delay: 2s;"></i>
+        <i class="fas fa-sewing-needle absolute bottom-32 left-32 text-gold/15 text-3xl animate-float" style="animation-delay: 4s;"></i>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <div class="space-y-8 animate-slide-up">
+            <span class="inline-block px-6 py-3 bg-gold/20 backdrop-blur-sm text-gold rounded-full text-sm font-semibold border border-gold/30">Premium Tailoring</span>
+            
+            <h1 class="text-6xl md:text-7xl font-playfair font-bold bg-gradient-to-r from-white via-gold to-white bg-clip-text text-transparent" style="background-size: 200% auto; animation: textShine 4s ease-in-out infinite;">
+                Our Services
+            </h1>
+            
+            <p class="text-xl md:text-2xl text-gray-200 max-w-4xl mx-auto leading-relaxed">
+                Discover our comprehensive range of premium tailoring services crafted with precision, passion, and decades of expertise
+            </p>
+            
+            <div class="flex justify-center">
+                <div class="w-32 h-1 bg-gradient-to-r from-transparent via-gold to-transparent rounded animate-pulse"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Grid with Advanced Cards -->
+<section class="py-24 bg-gradient-to-br from-white to-gray-50 relative">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-5">
+        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><defs><pattern id=\"services\" x=\"0\" y=\"0\" width=\"25\" height=\"25\" patternUnits=\"userSpaceOnUse\"><path d=\"M12.5,5 L20,12.5 L12.5,20 L5,12.5 Z\" fill=\"%23D4AF37\" opacity=\"0.3\"/></pattern></defs><rect width=\"100\" height=\"100\" fill=\"url(%23services)\"/></svg>'); background-size: 100px 100px;"></div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {% if services %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {% for service in services %}
+            <div class="group relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-6 hover:rotate-1 overflow-hidden">
+                <!-- Service Image with Advanced Effects -->
+                {% if service.image %}
+                <div class="relative overflow-hidden">
+                    <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-full h-72 object-cover group-hover:scale-125 transition-transform duration-700">
+                    
+                    <!-- Gradient Overlays -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                    <div class="absolute inset-0 bg-gradient-to-br from-gold/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <!-- Price Badge -->
+                    <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                        <span class="text-gold font-bold text-lg">PKR {{ service.price|floatformat:0 }}</span>
+                    </div>
+                    
+                    <!-- Service Icon -->
+                    <div class="absolute top-4 left-4 w-14 h-14 bg-gold/20 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transform -translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+                        <i class="fas fa-tshirt text-white text-xl"></i>
+                    </div>
+                </div>
+                {% else %}
+                <div class="h-72 bg-gradient-to-br from-gold/10 via-gold/5 to-transparent flex items-center justify-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-gold/20 to-transparent animate-pulse"></div>
+                    <i class="fas fa-tshirt text-6xl text-gold/60 relative z-10 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500"></i>
+                </div>
+                {% endif %}
+                
+                <!-- Content Section -->
+                <div class="p-8 relative">
+                    <!-- Service Title -->
+                    <h3 class="text-2xl font-playfair font-bold text-gray-900 mb-4 group-hover:text-gold transition-colors duration-300">
+                        {{ service.name }}
+                    </h3>
+                    
+                    <!-- Service Description -->
+                    <p class="text-gray-600 mb-6 leading-relaxed line-clamp-3">
+                        {{ service.description }}
+                    </p>
+                    
+                    <!-- Action Section -->
+                    <div class="flex items-center justify-between">
+                        <!-- Price Display -->
+                        <div class="flex flex-col">
+                            <span class="text-sm text-gray-500 font-medium">Starting from</span>
+                            <span class="text-3xl font-bold text-gold">PKR {{ service.price|floatformat:0 }}</span>
+                        </div>
+                        
+                        <!-- CTA Button -->
+                        <a href="{% url 'contact' %}" class="group/btn relative overflow-hidden bg-gradient-to-r from-gold to-dark-gold text-white px-8 py-4 rounded-full font-semibold hover:shadow-xl hover:shadow-gold/30 transition-all duration-500 transform hover:scale-105">
+                            <span class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></span>
+                            <span class="relative flex items-center space-x-2">
+                                <span>Get Quote</span>
+                                <i class="fas fa-arrow-right group-hover/btn:translate-x-1 transition-transform duration-300"></i>
+                            </span>
+                        </a>
+                    </div>
+                    
+                    <!-- Decorative Elements -->
+                    <div class="absolute -bottom-2 -right-2 w-20 h-20 bg-gold/5 rounded-full blur-xl group-hover:bg-gold/10 transition-colors duration-500"></div>
+                </div>
+                
+                <!-- Hover Border Effect -->
+                <div class="absolute inset-0 border-2 border-transparent group-hover:border-gold/20 rounded-3xl transition-colors duration-500"></div>
+                
+                <!-- Floating Decoration -->
+                <div class="absolute -top-1 -left-1 w-8 h-8 bg-gradient-to-br from-gold to-dark-gold rounded-full opacity-0 group-hover:opacity-100 transform scale-0 group-hover:scale-100 transition-all duration-500 delay-200"></div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-20">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-cut text-3xl text-gray-400"></i>
+            </div>
+            <h3 class="text-2xl font-semibold text-gray-900 mb-4">No Services Available</h3>
+            <p class="text-gray-600 max-w-md mx-auto">We're currently updating our services. Please check back soon or contact us directly for more information.</p>
+            <a href="{% url 'contact' %}" class="mt-6 inline-flex items-center space-x-2 bg-gradient-to-r from-gold to-dark-gold text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg hover:shadow-gold/25 transition-all duration-300">
+                <i class="fas fa-phone"></i>
+                <span>Contact Us</span>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-playfair font-bold text-gray-900 mb-6">Need a Custom Service?</h2>
+        <p class="text-lg text-gray-600 mb-8">Can't find what you're looking for? We offer custom tailoring solutions to meet your specific needs.</p>
+        <a href="{% url 'contact' %}" class="bg-gradient-to-r from-gold to-dark-gold text-white px-8 py-4 rounded-full font-semibold hover:shadow-lg hover:shadow-gold/25 transition-all duration-300 inline-flex items-center space-x-2">
+            <i class="fas fa-comments"></i>
+            <span>Discuss Your Requirements</span>
+        </a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ article.title }} - MZ Tailors{% endblock %}
+
+{% block content %}
+<!-- Article Header -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-6">{{ article.title }}</h1>
+            
+            <div class="flex flex-wrap items-center justify-center gap-6 text-gray-600 mb-8">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-user text-gold"></i>
+                    <span>By {{ article.author.username }}</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-calendar text-gold"></i>
+                    <span>{{ article.created_at|date:"F d, Y" }}</span>
+                </div>
+                {% if article.updated_at != article.created_at %}
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-edit text-gold"></i>
+                    <span>Updated {{ article.updated_at|date:"F d, Y" }}</span>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="w-24 h-1 bg-gradient-to-r from-gold to-dark-gold mx-auto rounded"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Article Content -->
+<section class="py-20">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <article class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            {% if article.image %}
+            <div class="relative">
+                <img src="{{ article.image.url }}" alt="{{ article.title }}" class="w-full h-64 md:h-96 object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            </div>
+            {% endif %}
+            
+            <div class="p-8 md:p-12">
+                <div class="prose prose-lg max-w-none">
+                    <div class="text-gray-700 leading-relaxed space-y-6">
+                        {{ article.content|linebreaks }}
+                    </div>
+                </div>
+            </div>
+        </article>
+        
+        <!-- Navigation -->
+        <div class="mt-12 flex flex-col sm:flex-row gap-4 justify-between items-center">
+            <a href="{% url 'articles' %}" class="bg-gradient-to-r from-gold to-dark-gold text-white px-8 py-3 rounded-full font-semibold hover:shadow-lg hover:shadow-gold/25 transition-all duration-300 inline-flex items-center space-x-2">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Articles</span>
+            </a>
+            
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-600">Share this article:</span>
+                <div class="flex space-x-2">
+                    <a href="#" class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition-colors">
+                        <i class="fab fa-facebook-f text-sm"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center text-white hover:bg-blue-500 transition-colors">
+                        <i class="fab fa-twitter text-sm"></i>
+                    </a>
+                    <a href="#" class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white hover:bg-green-700 transition-colors">
+                        <i class="fab fa-whatsapp text-sm"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Articles or CTA -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-playfair font-bold text-gray-900 mb-6">Need Tailoring Services?</h2>
+        <p class="text-lg text-gray-600 mb-8">Ready to experience the quality craftsmanship mentioned in our articles?</p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'services' %}" class="bg-gradient-to-r from-gold to-dark-gold text-white px-8 py-4 rounded-full font-semibold hover:shadow-lg hover:shadow-gold/25 transition-all duration-300 inline-flex items-center space-x-2">
+                <i class="fas fa-scissors"></i>
+                <span>View Our Services</span>
+            </a>
+            <a href="{% url 'contact' %}" class="border-2 border-gold text-gold px-8 py-4 rounded-full font-semibold hover:bg-gold hover:text-white transition-all duration-300 inline-flex items-center space-x-2">
+                <i class="fas fa-phone"></i>
+                <span>Contact Us</span>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

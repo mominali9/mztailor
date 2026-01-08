@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - MZ Tailors{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-navy to-light-navy py-20 text-white relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-gold/10 to-transparent"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        <h1 class="text-5xl font-playfair font-bold mb-6">Contact Us</h1>
+        <p class="text-xl text-gray-200 max-w-2xl mx-auto">Get in touch with us for premium tailoring services and personalized consultations</p>
+        <div class="w-24 h-1 bg-gradient-to-r from-gold to-dark-gold mx-auto mt-8 rounded"></div>
+    </div>
+</section>
+
+<!-- Contact Form & Info Section -->
+<section class="py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Contact Form -->
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <div class="mb-8">
+                    <h2 class="text-3xl font-playfair font-bold text-gray-900 mb-4">Get in Touch</h2>
+                    <p class="text-gray-600">Send us a message and we'll get back to you as soon as possible.</p>
+                </div>
+                
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+                    <div>
+                        <label class="flex items-center text-gray-700 font-semibold mb-2">
+                            <i class="fas fa-user text-gold mr-2"></i>
+                            {{ form.name.label }}
+                        </label>
+                        <input type="text" name="{{ form.name.name }}" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-gold focus:outline-none transition-colors duration-300" placeholder="Your full name" required>
+                    </div>
+                    
+                    <div>
+                        <label class="flex items-center text-gray-700 font-semibold mb-2">
+                            <i class="fas fa-envelope text-gold mr-2"></i>
+                            {{ form.email.label }}
+                        </label>
+                        <input type="email" name="{{ form.email.name }}" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-gold focus:outline-none transition-colors duration-300" placeholder="your.email@example.com" required>
+                    </div>
+                    
+                    <div>
+                        <label class="flex items-center text-gray-700 font-semibold mb-2">
+                            <i class="fas fa-phone text-gold mr-2"></i>
+                            {{ form.phone.label }}
+                        </label>
+                        <input type="tel" name="{{ form.phone.name }}" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-gold focus:outline-none transition-colors duration-300" placeholder="03XX-XXXXXXX">
+                    </div>
+                    
+                    <div>
+                        <label class="flex items-center text-gray-700 font-semibold mb-2">
+                            <i class="fas fa-comment text-gold mr-2"></i>
+                            {{ form.message.label }}
+                        </label>
+                        <textarea name="{{ form.message.name }}" rows="5" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-gold focus:outline-none transition-colors duration-300 resize-none" placeholder="Tell us about your tailoring needs..." required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-gradient-to-r from-gold to-dark-gold text-white py-4 rounded-xl font-semibold hover:shadow-lg hover:shadow-gold/25 transition-all duration-300 flex items-center justify-center space-x-2">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Send Message</span>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="space-y-8">
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <h2 class="text-3xl font-playfair font-bold text-gray-900 mb-8">Contact Information</h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Address -->
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-gold to-dark-gold rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-map-marker-alt text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900 mb-2">Address</h4>
+                                <p class="text-gray-600 leading-relaxed">
+                                    Near Tanki Chowk, Model Town "B"<br>
+                                    Karbala Road BWP<br>
+                                    Bahawalpur, Punjab
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Phone -->
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-gold to-dark-gold rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-phone text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900 mb-2">Contact Numbers</h4>
+                                <p class="text-gray-600">
+                                    Malik Zubair: <a href="tel:03012718205" class="text-gold hover:text-dark-gold transition-colors">0301-2718205</a><br>
+                                    Malik Mujahid: <a href="tel:03086058772" class="text-gold hover:text-dark-gold transition-colors">0308-6058772</a>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Email -->
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-gold to-dark-gold rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-envelope text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900 mb-2">Email</h4>
+                                <p class="text-gray-600">
+                                    <a href="mailto:info@mztailors.com" class="text-gold hover:text-dark-gold transition-colors">info@mztailors.com</a>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Business Hours -->
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-gold to-dark-gold rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-clock text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900 mb-2">Business Hours</h4>
+                                <div class="text-gray-600 space-y-1">
+                                    <p>Monday - Saturday: 9:00 AM - 8:00 PM</p>
+                                    <p>Sunday: 10:00 AM - 6:00 PM</p>
+                                    <p class="text-sm text-gold font-medium">Open 7 days a week</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <a href="https://maps.google.com/?q=Near+Tanki+Chowk+Model+Town+B+Karbala+Road+Bahawalpur" target="_blank" class="bg-gradient-to-r from-gold to-dark-gold text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg hover:shadow-gold/25 transition-all duration-300 inline-flex items-center space-x-2">
+                            <i class="fas fa-map-marked-alt"></i>
+                            <span>View on Google Maps</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-playfair font-bold text-gray-900 mb-4">Find Us</h2>
+            <p class="text-gray-600">Visit our store for personalized consultations and fittings</p>
+        </div>
+        
+        <div class="relative rounded-2xl overflow-hidden shadow-2xl">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3456.789!2d71.6687!3d29.3956!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjnCsDIzJzQ0LjIiTiA3McKwNDAnMDcuMyJF!5e0!3m2!1sen!2s!4v1234567890" 
+                width="100%" 
+                height="400" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+            <div class="absolute top-4 right-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-gold to-dark-gold rounded-full flex items-center justify-center shadow-lg animate-bounce">
+                    <i class="fas fa-map-pin text-white"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
