@@ -51,7 +51,7 @@
             {% for service in services %}
             <div class="group relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-700 transform hover:-translate-y-6 hover:rotate-1 overflow-hidden">
                 <!-- Service Image with Advanced Effects -->
-                {% if service.image %}
+                {% if service.image and service.image.name %}
                 <div class="relative overflow-hidden">
                     <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-full h-72 object-cover group-hover:scale-125 transition-transform duration-700">
                     
@@ -61,7 +61,7 @@
                     
                     <!-- Price Badge -->
                     <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                        <span class="text-gold font-bold text-lg">PKR {{ service.price|floatformat:0 }}</span>
+                        <span class="text-gold font-bold text-lg">£{{ service.price|floatformat:0 }}</span>
                     </div>
                     
                     <!-- Service Icon -->
@@ -93,7 +93,7 @@
                         <!-- Price Display -->
                         <div class="flex flex-col">
                             <span class="text-sm text-gray-500 font-medium">Starting from</span>
-                            <span class="text-3xl font-bold text-gold">PKR {{ service.price|floatformat:0 }}</span>
+                            <span class="text-3xl font-bold text-gold">£{{ service.price|floatformat:0 }}</span>
                         </div>
                         
                         <!-- CTA Button -->

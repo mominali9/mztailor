@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Manage Services | Admin{% endblock %}
+
+{% block content %}
+<div class="bg-gray-900 min-h-screen text-white pt-24 pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-4xl font-playfair font-bold text-gold">Service Management</h1>
+                <p class="text-gray-400 mt-2">Update your bespoke tailoring offerings</p>
+            </div>
+            <a href="{% url 'service_create' %}" class="bg-gold hover:bg-dark-gold text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-gold/20">
+                <i class="fas fa-plus"></i> Add New Service
+            </a>
+        </div>
+
+        <div class="premium-card overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="border-b border-white/10 bg-white/5">
+                            <th class="px-6 py-4 text-gold font-bold uppercase text-xs tracking-wider">Service Title</th>
+                            <th class="px-6 py-4 text-gold font-bold uppercase text-xs tracking-wider">Description</th>
+                            <th class="px-6 py-4 text-gold font-bold uppercase text-xs tracking-wider">Price Starting From</th>
+                            <th class="px-6 py-4 text-gold font-bold uppercase text-xs tracking-wider text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        {% for svc in services %}
+                        <tr class="hover:bg-white/5 transition-colors group">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-lg bg-gold/10 flex items-center justify-center border border-gold/20">
+                                        <i class="fas fa-cut text-gold"></i>
+                                    </div>
+                                    <span class="font-semibold">{{ svc.name }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-gray-400 text-sm max-w-md truncate">{{ svc.description }}</td>
+                            <td class="px-6 py-4 font-bold text-white">£{{ svc.price }}</td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex justify-end gap-2">
+                                    <a href="{% url 'service_edit' svc.pk %}" class="p-2 bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white rounded-lg transition-all" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

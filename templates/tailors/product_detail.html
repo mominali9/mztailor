@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} | MZ Tailors{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+        
+        <!-- Product Image -->
+        <div class="relative group animate-slide-up bg-white rounded-3xl p-4 shadow-xl border border-gold/20 overflow-hidden">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-auto rounded-2xl object-cover transform group-hover:scale-105 transition-transform duration-700">
+            {% else %}
+            <div class="w-full h-96 bg-gray-100 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-image text-4xl text-gray-400"></i>
+            </div>
+            {% endif %}
+            <div class="absolute top-8 right-8 bg-white/90 backdrop-blur px-4 py-2 rounded-full text-gold font-bold shadow-lg">
+                Premium
+            </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="animate-slide-up" style="animation-delay: 0.2s;">
+            <div class="mb-8 border-b border-gray-200 pb-8">
+                <span class="text-sm font-semibold text-gold tracking-widest uppercase mb-2 block">{{ product.category.name }}</span>
+                <h1 class="text-4xl lg:text-5xl font-playfair font-bold text-gray-900 mb-4">{{ product.name }}</h1>
+                <p class="text-3xl font-semibold text-gray-900">£ {{ product.price }}</p>
+            </div>
+
+            <div class="prose prose-lg text-gray-600 mb-8 leading-relaxed">
+                {{ product.description|linebreaks }}
+            </div>
+
+            <form action="{% url 'cart' %}" method="POST" class="space-y-6">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="hidden" name="action" value="add">
+                
+                {% if variations %}
+                <div>
+                    <label class="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">Select Variation</label>
+                    <div class="relative">
+                        <select name="variation_id" class="w-full bg-white border-2 border-gray-200 rounded-xl px-4 py-3 appearance-none focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold transition-colors text-gray-700 font-medium">
+                            {% for variation in variations %}
+                            <option value="{{ variation.id }}">Size: {{ variation.size }} - Color: {{ variation.color }}</option>
+                            {% endfor %}
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">Quantity</label>
+                    <div class="flex items-center border-2 border-gray-200 rounded-xl w-36 bg-white overflow-hidden">
+                        <button type="button" onclick="changeQty(-1)" class="px-4 py-3 text-gray-500 hover:text-gold hover:bg-gold/10 transition-colors font-bold text-lg">-</button>
+                        <input type="number" id="quantity" name="quantity" value="1" min="1" max="99" readonly class="w-full text-center font-bold text-gray-900 focus:outline-none bg-transparent text-lg">
+                        <button type="button" onclick="changeQty(1)" class="px-4 py-3 text-gray-500 hover:text-gold hover:bg-gold/10 transition-colors font-bold text-lg">+</button>
+                    </div>
+                </div>
+
+                <div class="pt-6">
+                    <button type="submit" class="w-full premium-btn justify-center text-lg py-4 shadow-xl shadow-gold/20 hover:shadow-gold/40">
+                        <i class="fas fa-shopping-bag mr-2"></i> Add to Cart
+                    </button>
+                    
+                    <a href="{% url 'ai_measure' %}" class="w-full mt-4 bg-white border-2 border-gray-900 text-gray-900 rounded-full py-4 font-bold text-lg hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2">
+                        <i class="fas fa-camera text-gold"></i>
+                        <span>Calculate My Size with AI</span>
+                    </a>
+                </div>
+            </form>
+
+            <!-- Features -->
+            <div class="grid grid-cols-2 gap-4 mt-12 pt-8 border-t border-gray-200">
+                <div class="flex items-center space-x-3 text-gray-700">
+                    <div class="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center text-gold">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <span class="font-medium text-sm">Free Express Shipping</span>
+                </div>
+                <div class="flex items-center space-x-3 text-gray-700">
+                    <div class="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center text-gold">
+                        <i class="fas fa-undo"></i>
+                    </div>
+                    <span class="font-medium text-sm">30-Day Free Returns</span>
+                </div>
+                <div class="flex items-center space-x-3 text-gray-700 col-span-2">
+                    <div class="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center text-gold">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <span class="font-medium text-sm">Premium Tailoring Guarantee</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function changeQty(delta) {
+    const input = document.getElementById('quantity');
+    const newVal = Math.max(1, parseInt(input.value) + delta);
+    input.value = newVal;
+}
+</script>
+{% endblock %}

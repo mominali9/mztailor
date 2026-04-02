@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shop | MZ Tailors{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center mb-16">
+        <h1 class="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-4 animate-slide-up">Our <span class="gradient-text">Collection</span></h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto animate-slide-up" style="animation-delay: 0.2s;">
+            Explore our premium tailored clothing. Each piece is crafted with precision and the finest materials.
+        </p>
+    </div>
+
+    <!-- Category Filter -->
+    <div class="flex flex-wrap justify-center gap-4 mb-12 animate-slide-up" style="animation-delay: 0.3s;">
+        <a href="{% url 'shop' %}" class="premium-btn text-sm py-2 px-6">All</a>
+        {% for category in categories %}
+        <a href="?category={{ category.id }}" class="bg-white text-gray-700 border border-gray-200 hover:border-gold hover:text-gold rounded-full px-6 py-2 text-sm font-medium transition-colors shadow-sm">
+            {{ category.name }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Products Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for product in products %}
+        <div class="premium-card group animate-slide-up" style="animation-delay: 0.{{ forloop.counter|add:3 }}s;">
+            {% if product.image %}
+            <div class="relative overflow-hidden aspect-[4/5]">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute bottom-4 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex justify-center space-x-2">
+                    <a href="{% url 'product_detail' product.id %}" class="bg-white text-gray-900 hover:bg-gold hover:text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+            <div class="p-6">
+                <div class="text-sm text-gold font-medium tracking-wider mb-2 uppercase">{{ product.category.name }}</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2 truncate"><a href="{% url 'product_detail' product.id %}" class="hover:text-gold transition-colors">{{ product.name }}</a></h3>
+                <p class="text-gray-600 font-semibold mb-4 text-lg">£ {{ product.price }}</p>
+                <a href="{% url 'product_detail' product.id %}" class="block w-full text-center py-3 bg-gray-900 text-white rounded-xl hover:bg-gold transition-colors font-medium">View Details</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full py-16 text-center">
+            <i class="fas fa-box-open text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-2xl font-semibold text-gray-500">No products available at the moment.</h3>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

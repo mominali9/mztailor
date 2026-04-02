@@ -69,4 +69,45 @@ class StatisticsAdmin(admin.ModelAdmin):
     list_filter = ['is_active', 'updated_at']
     list_editable = ['happy_customers', 'years_experience', 'expert_tailors', 'satisfaction_rate', 'is_active']
     list_display_links = ['id']
-    
+
+class ProductVariationInline(admin.TabularInline):
+    model = ProductVariation
+    extra = 1
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ['name', 'category', 'price', 'is_active', 'created_at']
+    list_filter = ['is_active', 'category']
+    search_fields = ['name', 'description']
+    inlines = [ProductVariationInline]
+
+@admin.register(ProductVariation)
+class ProductVariationAdmin(admin.ModelAdmin):
+    list_display = ['product', 'size', 'color', 'stock_quantity']
+    list_filter = ['size', 'color']
+
+class CartItemInline(admin.TabularInline):
+    model = CartItem
+    extra = 0
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'session_key', 'created_at']
+    inlines = [CartItemInline]
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'total_amount', 'status', 'created_at']
+    list_filter = ['status', 'created_at']
+    search_fields = ['user__username', 'shipping_address']
+    list_editable = ['status']
+    inlines = [OrderItemInline]
+
+@admin.register(MeasurementProfile)
+class MeasurementProfileAdmin(admin.ModelAdmin):
+    list_display = ['user', 'height_cm', 'chest_cm', 'recommended_size', 'created_at']
+    search_fields = ['user__username']    

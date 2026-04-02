@@ -1,0 +1,436 @@
+{% extends 'base.html' %}
+{% block title %}3D Studio | MZ Tailors{% endblock %}
+
+{% block content %}
+<div class="bg-gray-900 min-h-screen text-white pt-24 pb-12">
+    <div class="container mx-auto px-4">
+        
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- 3D Canvas Area -->
+            <div class="w-full lg:w-2/3 h-[700px] bg-gradient-to-b from-gray-800 to-black rounded-3xl overflow-hidden relative shadow-2xl border border-white/10" id="canvas-container">
+                <div id="loading-overlay" class="absolute inset-0 bg-black/90 flex items-center justify-center z-50 transition-opacity duration-500">
+                    <div class="text-center">
+                        <i class="fas fa-spinner fa-spin text-4xl text-gold mb-4"></i>
+                        <p class="text-gold font-playfair animate-pulse tracking-widest uppercase">Rendering High-Fidelity Model...</p>
+                    </div>
+                </div>
+                <!-- Selection Overlay -->
+                <div id="selection-label" class="absolute top-6 left-6 bg-black/50 backdrop-blur-md border border-gold/50 text-gold px-4 py-2 rounded-lg font-bold uppercase tracking-wider text-sm shadow-xl transition-all opacity-0 pointer-events-none z-10">
+                    Selected: <span id="current-part-text">None</span>
+                </div>
+                
+                <div class="absolute bottom-6 left-6 right-6 text-center pointer-events-none z-10">
+                    <p class="text-white/50 text-sm bg-black/40 backdrop-blur-sm inline-block px-4 py-2 rounded-full border border-white/10">
+                        <i class="fas fa-mouse mr-2"></i> Drag to rotate • Scroll to zoom • Click a part to edit
+                    </p>
+                </div>
+            </div>
+
+            <!-- Controls Area -->
+            <div class="w-full lg:w-1/3 space-y-6">
+                <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 sticky top-24">
+                    <h2 class="text-3xl font-playfair font-bold text-gold mb-2">Bespoke 3D Studio</h2>
+                    <p class="text-gray-400 mb-8 pb-6 border-b border-white/10 text-sm">Tap any piece of the suit on the 3D model, or select a part below to customize its exact fabric color.</p>
+
+                    <div class="space-y-8">
+                        
+                        <!-- Gender Selection -->
+                        <div class="bg-white/5 p-4 rounded-2xl border border-white/10">
+                            <h3 class="font-bold mb-4 uppercase tracking-wider text-xs flex items-center text-gray-300">
+                                <i class="fas fa-venus-mars text-gold mr-2"></i> Select Profile
+                            </h3>
+                            <div class="flex p-1 bg-black/40 rounded-xl border border-white/5">
+                                <button id="gender-male" class="flex-1 py-3 rounded-lg font-bold text-sm transition-all bg-gold text-white shadow-lg" onclick="setGender('male')">
+                                    <i class="fas fa-mars mr-2"></i> Male
+                                </button>
+                                <button id="gender-female" class="flex-1 py-3 rounded-lg font-bold text-sm transition-all text-gray-500 hover:text-white" onclick="setGender('female')">
+                                    <i class="fas fa-venus mr-2"></i> Female
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Part Selector -->
+                        <div>
+                            <h3 class="font-bold mb-4 uppercase tracking-wider text-xs flex items-center text-gray-300">
+                                <i class="fas fa-layer-group text-gold mr-2"></i> 1. Select High-Detail Part
+                            </h3>
+                            <div class="grid grid-cols-2 gap-2" id="part-controls">
+                                <button class="part-btn w-full py-2.5 rounded-xl border border-gold/50 bg-gold/10 text-gold font-bold text-xs" data-part="chest">Torso / Chest</button>
+                                <button class="part-btn w-full py-2.5 rounded-xl border border-white/10 text-gray-400 font-bold text-xs" data-part="collar">Collar / Lapel</button>
+                                
+                                <button class="part-btn w-full py-2.5 rounded-xl border border-white/10 text-gray-400 font-bold text-xs" data-part="upperArm">Upper Sleeves</button>
+                                <button class="part-btn w-full py-2.5 rounded-xl border border-white/10 text-gray-400 font-bold text-xs" data-part="lowerArm">Lower Sleeves</button>
+                                
+                                <button class="part-btn w-full py-2.5 rounded-xl border border-white/10 text-gray-400 font-bold text-xs" data-part="thigh">Upper Leg</button>
+                                <button class="part-btn w-full py-2.5 rounded-xl border border-white/10 text-gray-400 font-bold text-xs" data-part="calf">Lower Leg</button>
+                                
+                                <button class="part-btn w-full py-2.5 rounded-xl border border-white/10 text-gray-400 font-bold text-xs" data-part="shoes">Footwear</button>
+                                <button class="part-btn w-full py-2.5 rounded-xl border border-white/10 text-gray-400 font-bold text-xs" data-part="hair">Grooming / Hair</button>
+                                
+                                <button class="part-btn w-full py-2.5 rounded-xl border border-white/10 text-gray-400 font-bold text-xs col-span-2" data-part="skin">Skin Base</button>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Color Selection -->
+                        <div>
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold uppercase tracking-wider text-xs flex items-center text-gray-300">
+                                    <i class="fas fa-palette text-gold mr-2"></i> 2. Fabric & Color
+                                </h3>
+                                <div class="flex items-center space-x-2 bg-black/40 px-3 py-1 rounded-full border border-white/10">
+                                    <span class="text-[10px] text-gray-400 uppercase">Custom</span>
+                                    <input type="color" id="custom-picker" class="w-6 h-6 bg-transparent border-0 cursor-pointer" value="#D4AF37">
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-5 gap-3" id="color-controls">
+                                <!-- Core -->
+                                <button class="w-10 h-10 rounded-full bg-[#1a1a1a] border-2 border-white/20 hover:scale-110 transition-all shadow-lg" data-color="0x1a1a1a" title="Obsidian"></button>
+                                <button class="w-10 h-10 rounded-full bg-[#172554] border-2 border-white/20 hover:scale-110 transition-all shadow-lg" data-color="0x172554" title="Navy"></button>
+                                <button class="w-10 h-10 rounded-full bg-[#3d3d3d] border-2 border-white/20 hover:scale-110 transition-all shadow-lg" data-color="0x3d3d3d" title="Charcoal"></button>
+                                <button class="w-10 h-10 rounded-full bg-[#e5e5e5] border-2 border-white/20 hover:scale-110 transition-all shadow-lg" data-color="0xe5e5e5" title="Ivory"></button>
+                                <button class="w-10 h-10 rounded-full bg-[#D4AF37] border-2 border-white/20 hover:scale-110 transition-all shadow-lg" data-color="0xD4AF37" title="Gold"></button>
+                                
+                                <!-- Premium -->
+                                <button class="w-10 h-10 rounded-full bg-[#710000] border-2 border-white/20 hover:scale-110 transition-all shadow-lg" data-color="0x710000" title="Burgundy"></button>
+                                <button class="w-10 h-10 rounded-full bg-[#064e3b] border-2 border-white/20 hover:scale-110 transition-all shadow-lg" data-color="0x064e3b" title="Emerald"></button>
+                                <button class="w-10 h-10 rounded-full bg-[#4c1d95] border-2 border-white/20 hover:scale-110 transition-all shadow-lg" data-color="0x4c1d95" title="Royal"></button>
+                                <button class="w-10 h-10 rounded-full bg-[#be185d] border-2 border-white/20 hover:scale-110 transition-all shadow-lg" data-color="0xbe185d" title="Rose"></button>
+                                <button class="w-10 h-10 rounded-full bg-[#1e293b] border-2 border-white/20 hover:scale-110 transition-all shadow-lg" data-color="0x1e293b" title="Carbon"></button>
+
+                                <!-- Stylized -->
+                                <button class="w-10 h-10 rounded-full bg-[#fca5a5] border-2 border-white/20 hover:scale-110 transition-all shadow-lg" data-color="0xfca5a5" title="Salmon"></button>
+                                <button class="w-10 h-10 rounded-full bg-[#93c5fd] border-2 border-white/20 hover:scale-110 transition-all shadow-lg" data-color="0x93c5fd" title="Sky"></button>
+                                <button class="w-10 h-10 rounded-full bg-[#c084fc] border-2 border-white/20 hover:scale-110 transition-all shadow-lg" data-color="0xc084fc" title="Lavender"></button>
+                                <button class="w-10 h-10 rounded-full bg-[#fbbf24] border-2 border-white/20 hover:scale-110 transition-all shadow-lg" data-color="0xfbbf24" title="Amber"></button>
+                                <button class="w-10 h-10 rounded-full bg-[#10b981] border-2 border-white/20 hover:scale-110 transition-all shadow-lg" data-color="0x10b981" title="Mint"></button>
+                            </div>
+                        </div>
+
+                        <a href="{% url 'shop' %}" class="block w-full text-center bg-gradient-to-r from-gold to-dark-gold hover:from-white hover:to-white hover:text-black text-white font-bold py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(212,175,55,0.4)] transition-all duration-300 transform hover:-translate-y-1 mt-8 uppercase tracking-widest text-sm">
+                            Finalize Design
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Three.JS Dependencies -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        // --- 1. Scene Setup ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(0, 3, 7);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.2;
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.minDistance = 3;
+        controls.maxDistance = 8;
+        controls.target.set(0, 2, 0);
+        controls.maxPolarAngle = Math.PI / 1.8; // Prevent going beneath floor
+
+        // --- 2. Lighting ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
+
+        const spotLight = new THREE.SpotLight(0xffffff, 1.5);
+        spotLight.position.set(3, 8, 5);
+        spotLight.castShadow = true;
+        spotLight.shadow.mapSize.width = 2048;
+        spotLight.shadow.mapSize.height = 2048;
+        spotLight.shadow.bias = -0.0001;
+        spotLight.penumbra = 0.3;
+        scene.add(spotLight);
+        
+        const backLight = new THREE.SpotLight(0xD4AF37, 1);
+        backLight.position.set(-3, 5, -5);
+        backLight.penumbra = 0.8;
+        scene.add(backLight);
+        
+        const fillLight = new THREE.PointLight(0x4444ff, 0.5);
+        fillLight.position.set(-4, 2, 4);
+        scene.add(fillLight);
+
+        // --- 3. Environment/Studio ---
+        const floorGeo = new THREE.PlaneGeometry(20, 20);
+        const floorMat = new THREE.MeshStandardMaterial({ 
+            color: 0x050505, 
+            roughness: 0.1, 
+            metalness: 0.5 
+        });
+        const floor = new THREE.Mesh(floorGeo, floorMat);
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        scene.add(floor);
+        
+        // Studio Backbot
+        const gridGeo = new THREE.CylinderGeometry(10, 10, 10, 32, 1, true, 0, Math.PI);
+        const gridMat = new THREE.MeshBasicMaterial({ color: 0x222222, wireframe: true, transparent: true, opacity: 0.1 });
+        const grid = new THREE.Mesh(gridGeo, gridMat);
+        grid.position.y = 5;
+        scene.add(grid);
+
+        const geoDisk = new THREE.CylinderGeometry(1.8, 2.0, 0.2, 64);
+        const matDisk = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.3, metalness: 0.8 });
+        const pedestal = new THREE.Mesh(geoDisk, matDisk);
+        pedestal.position.y = 0.1;
+        pedestal.receiveShadow = true;
+        pedestal.castShadow = true;
+        scene.add(pedestal);
+
+        // --- 4. Ultra-Detailed Stylized Mannequin ---
+        const mannequinGroup = new THREE.Group();
+        let bust, hair, leftEye, rightEye, nose, skirt, shoes; 
+        
+        const fabricConfig = { roughness: 0.85, metalness: 0.02, clearcoat: 0.1 };
+        const materials = {
+            chest: new THREE.MeshPhysicalMaterial({ color: 0xffffff, ...fabricConfig }), 
+            collar: new THREE.MeshPhysicalMaterial({ color: 0x222222, ...fabricConfig }),
+            upperArm: new THREE.MeshPhysicalMaterial({ color: 0xffffff, ...fabricConfig }),
+            lowerArm: new THREE.MeshPhysicalMaterial({ color: 0xffffff, ...fabricConfig }),
+            thigh: new THREE.MeshPhysicalMaterial({ color: 0x111111, ...fabricConfig }),
+            calf: new THREE.MeshPhysicalMaterial({ color: 0x111111, ...fabricConfig }),
+            shoes: new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.2, metalness: 0.5 }),
+            skin: new THREE.MeshStandardMaterial({ color: 0xdbac98, roughness: 0.35 }),
+            hair: new THREE.MeshStandardMaterial({ color: 0x3d2b1f, roughness: 0.8 }),
+            eyes: new THREE.MeshBasicMaterial({ color: 0x0a0a0a })
+        };
+
+        // A. Head & Face (Stylized)
+        const headGroup = new THREE.Group();
+        const faceGeo = new THREE.SphereGeometry(0.2, 32, 32);
+        faceGeo.scale(1, 1.1, 0.9);
+        const face = new THREE.Mesh(faceGeo, materials.skin);
+        
+        const jawGeo = new THREE.BoxGeometry(0.18, 0.1, 0.18);
+        const jaw = new THREE.Mesh(jawGeo, materials.skin);
+        jaw.position.set(0, -0.12, 0);
+        jaw.rotation.x = Math.PI / 12;
+        
+        leftEye = new THREE.Mesh(new THREE.SphereGeometry(0.02, 16, 16), materials.eyes);
+        rightEye = new THREE.Mesh(new THREE.SphereGeometry(0.02, 16, 16), materials.eyes);
+        leftEye.position.set(-0.06, 0.04, 0.16);
+        rightEye.position.set(0.06, 0.04, 0.16);
+
+        nose = new THREE.Mesh(new THREE.ConeGeometry(0.02, 0.06, 4), materials.skin);
+        nose.position.set(0, -0.01, 0.19);
+        nose.rotation.x = Math.PI / 2;
+
+        hair = new THREE.Mesh(new THREE.SphereGeometry(0.22, 32, 32), materials.hair);
+        hair.scale.set(1.1, 1.3, 1.2);
+        hair.position.y = 0.08;
+        hair.name = 'hair';
+
+        headGroup.add(face, jaw, leftEye, rightEye, nose, hair);
+        headGroup.position.set(0, 3.8, 0);
+        mannequinGroup.add(headGroup);
+
+        const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.14, 0.6, 32), materials.skin);
+        neck.position.y = 3.55;
+        neck.name = 'skin';
+        mannequinGroup.add(neck);
+
+        // B. Torso
+        const chest = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.4, 1.5, 32, 1), materials.chest);
+        chest.scale.set(1, 1, 0.6);
+        chest.position.y = 2.7;
+        chest.name = 'chest';
+        mannequinGroup.add(chest);
+
+        bust = new THREE.Group();
+        const bGeo = new THREE.SphereGeometry(0.2, 32, 32);
+        bGeo.scale(1, 0.9, 1);
+        const lb = new THREE.Mesh(bGeo, materials.chest);
+        const rb = new THREE.Mesh(bGeo, materials.chest);
+        lb.position.set(-0.2, 2.95, 0.25);
+        rb.position.set(0.2, 2.95, 0.25);
+        bust.add(lb, rb);
+        bust.visible = false;
+        mannequinGroup.add(bust);
+
+        const coll = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.08, 16, 32, Math.PI), materials.collar);
+        coll.position.set(0, 3.35, 0.22);
+        coll.rotation.x = Math.PI / 4;
+        coll.name = 'collar';
+        mannequinGroup.add(coll);
+
+        // C. Jointed Arms
+        const createJointedArm = (side) => {
+            const group = new THREE.Group();
+            const upper = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.12, 0.8, 32), materials.upperArm);
+            upper.position.y = -0.4;
+            upper.name = 'upperArm';
+            
+            const elbow = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 16), materials.upperArm);
+            elbow.position.y = -0.8;
+            
+            const lower = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.09, 0.8, 32), materials.lowerArm);
+            lower.position.y = -1.2;
+            lower.name = 'lowerArm';
+            
+            const hand = new THREE.Mesh(new THREE.SphereGeometry(0.09, 16, 16), materials.skin);
+            hand.scale.set(0.8, 1.1, 0.4);
+            hand.position.y = -1.6;
+            hand.name = 'skin';
+            
+            group.add(upper, elbow, lower, hand);
+            group.position.set(side * 0.65, 3.3, 0);
+            return group;
+        };
+        const lArm = createJointedArm(-1);
+        const rArm = createJointedArm(1);
+        mannequinGroup.add(lArm, rArm);
+
+        // D. Jointed Legs
+        const createJointedLeg = (side) => {
+            const group = new THREE.Group();
+            const thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.18, 1.1, 32), materials.thigh);
+            thigh.position.y = -0.55;
+            thigh.name = 'thigh';
+            
+            const knee = new THREE.Mesh(new THREE.SphereGeometry(0.17, 16, 16), materials.thigh);
+            knee.position.y = -1.1;
+            
+            const calf = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.14, 1.1, 32), materials.calf);
+            calf.position.y = -1.65;
+            calf.name = 'calf';
+            
+            group.add(thigh, knee, calf);
+            group.position.set(side * 0.22, 1.95, 0);
+            return group;
+        };
+        const lLeg = createJointedLeg(-1);
+        const rLeg = createJointedLeg(1);
+        mannequinGroup.add(lLeg, rLeg);
+
+        // E. Clothing & Footwear
+        skirt = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.85, 1.3, 32, 1, true), materials.thigh);
+        skirt.position.y = 1.35;
+        skirt.visible = false;
+        skirt.name = 'thigh';
+        mannequinGroup.add(skirt);
+
+        shoes = new THREE.Group();
+        const baseShoeGeo = new THREE.BoxGeometry(0.24, 0.16, 0.55);
+        const lShoe = new THREE.Mesh(baseShoeGeo, materials.shoes);
+        const rShoe = new THREE.Mesh(baseShoeGeo, materials.shoes);
+        lShoe.position.set(-0.25, 0.15, 0.1);
+        rShoe.position.set(0.25, 0.15, 0.1);
+        shoes.add(lShoe, rShoe);
+        mannequinGroup.add(shoes);
+        
+        scene.add(mannequinGroup);
+
+        // --- Logic & Control ---
+        window.setGender = function(gender) {
+            const isF = (gender === 'female');
+            document.getElementById('gender-male').className = `flex-1 py-3 rounded-lg font-bold text-sm transition-all ${!isF ? 'bg-gold text-white shadow-lg' : 'text-gray-500 hover:text-white'}`;
+            document.getElementById('gender-female').className = `flex-1 py-3 rounded-lg font-bold text-sm transition-all ${isF ? 'bg-gold text-white shadow-lg' : 'text-gray-500 hover:text-white'}`;
+            
+            neck.scale.set(isF ? 0.9 : 1, isF ? 1.5 : 1, isF ? 0.9 : 1);
+            chest.scale.set(isF ? 0.8 : 1, 1, isF ? 0.8 : 1);
+            bust.visible = isF;
+            skirt.visible = isF;
+            lLeg.visible = !isF;
+            rLeg.visible = !isF;
+            hair.scale.set(isF ? 1.15 : 1.1, isF ? 1.6 : 1.3, isF ? 1.25 : 1.2);
+            lArm.position.x = isF ? -0.55 : -0.65;
+            rArm.position.x = isF ? 0.55 : 0.65;
+            
+            const loader = document.getElementById('loading-overlay');
+            loader.style.display = 'flex';
+            loader.style.opacity = '1';
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 300);
+            }, 600);
+        };
+
+        document.getElementById('custom-picker').addEventListener('input', (e) => {
+            const hex = e.target.value.replace('#', '0x');
+            if (materials[activePart]) materials[activePart].color.setHex(parseInt(hex));
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            mannequinGroup.rotation.y += 0.002; 
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        let activePart = 'chest';
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        const updateActiveUI = (partName) => {
+            activePart = partName;
+            document.querySelectorAll('.part-btn').forEach(btn => {
+                const isActive = btn.dataset.part === partName;
+                btn.className = `part-btn w-full py-2.5 rounded-xl border font-bold text-xs transition-all ${isActive ? 'border-gold/50 bg-gold/10 text-gold shadow-[0_0_10px_rgba(212,175,55,0.2)]' : 'border-white/10 text-gray-400 hover:bg-white/5'}`;
+            });
+            document.getElementById('current-part-text').innerText = partName.replace(/([A-Z])/g, ' $1').trim().toUpperCase();
+            document.getElementById('selection-label').style.opacity = '1';
+            
+            const mat = materials[partName];
+            if (mat) {
+                const oldEmissive = mat.emissive.getHex();
+                mat.emissive.setHex(0x221100);
+                setTimeout(() => mat.emissive.setHex(oldEmissive), 300);
+            }
+        };
+
+        container.addEventListener('pointerdown', (e) => {
+            const rect = container.getBoundingClientRect();
+            mouse.x = ((e.clientX - rect.left) / container.clientWidth) * 2 - 1;
+            mouse.y = -((e.clientY - rect.top) / container.clientHeight) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(mannequinGroup.children, true);
+            if (intersects.length > 0) {
+                let obj = intersects[0].object;
+                while (obj && !obj.name) obj = obj.parent;
+                if (obj && obj.name && materials[obj.name]) updateActiveUI(obj.name);
+            }
+        });
+
+        document.querySelectorAll('.part-btn').forEach(btn => btn.onclick = (e) => updateActiveUI(e.target.dataset.part));
+        document.querySelectorAll('#color-controls button').forEach(btn => btn.onclick = (e) => {
+            const hex = parseInt(e.target.dataset.color);
+            if (materials[activePart]) materials[activePart].color.setHex(hex);
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+
+        // Hide loading overlay once initialization is complete
+        setTimeout(() => {
+            const loader = document.getElementById('loading-overlay');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 500);
+            }
+        }, 1000);
+    });
+</script>
+{% endblock %}

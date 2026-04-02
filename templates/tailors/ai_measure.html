@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AI Measurement Studio | MZ Tailors{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center mb-12 animate-slide-up">
+        <div class="inline-flex items-center justify-center space-x-2 bg-gold/10 px-4 py-2 rounded-full text-gold font-bold mb-4 border border-gold/20">
+            <i class="fas fa-robot"></i>
+            <span>Powered by AI</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-playfair font-bold text-gray-900 mb-4">Smart <span class="gradient-text">Measurement</span> Studio</h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">Upload a full-body photo and enter your height. Our AI will automatically calculate your tailored measurements and recommend the perfect size.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <!-- Input Section -->
+        <div class="premium-card p-8 animate-slide-up relative overflow-hidden" style="animation-delay: 0.1s;">
+            <div class="absolute -top-12 -right-12 text-gray-50 opacity-50 transform rotate-12 pointer-events-none">
+                <i class="fas fa-camera text-[150px]"></i>
+            </div>
+            
+            <form id="measurement-form" class="relative z-10 space-y-8">
+                {% csrf_token %}
+                
+                <!-- Height Input -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide flex items-center">
+                        <i class="fas fa-arrows-alt-v text-gold mr-2 text-lg"></i> Your Height
+                    </label>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative flex-grow">
+                            <input type="number" id="height_cm" required placeholder="e.g. 175" class="w-full border-2 border-gray-200 rounded-xl px-4 py-4 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold bg-gray-50 text-xl font-bold text-gray-900 transition-all shadow-inner">
+                            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">cm</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2 font-medium"><i class="fas fa-info-circle text-gold mr-1"></i> Accurate height is required for precise AI scaling.</p>
+                </div>
+
+                <!-- Image Upload -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide flex items-center">
+                        <i class="fas fa-image text-gold mr-2 text-lg"></i> Full Body Photo
+                    </label>
+                    
+                    <div class="mt-2 flex justify-center px-6 pt-10 pb-12 border-2 border-gray-300 border-dashed rounded-2xl hover:border-gold transition-colors bg-white relative group cursor-pointer" onclick="document.getElementById('file-upload').click()">
+                        <div class="space-y-4 text-center relative z-10">
+                            <div class="w-20 h-20 mx-auto bg-gray-50 rounded-full flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300 group-hover:bg-gold/10 border border-gray-100">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 group-hover:text-gold transition-colors"></i>
+                            </div>
+                            <div class="flex flex-col text-sm text-gray-600">
+                                <span class="relative cursor-pointer bg-white rounded-md font-bold text-gold hover:text-dark-gold focus-within:outline-none text-lg mb-1">
+                                    <span>Upload a file</span>
+                                    <input id="file-upload" name="file-upload" type="file" class="sr-only" accept="image/*" onchange="previewImage(event)">
+                                </span>
+                                <span class="font-medium text-gray-500 text-base">or drag and drop</span>
+                            </div>
+                            <p class="text-xs text-gray-500 font-medium bg-gray-50 px-3 py-1 rounded-full inline-block border border-gray-100">PNG, JPG, JPEG up to 10MB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Area -->
+                <div id="image-preview-container" class="hidden">
+                    <label class="block text-sm font-bold text-gray-900 mb-2 uppercase tracking-wide">Image Preview</label>
+                    <div class="relative rounded-2xl overflow-hidden border-2 border-gold/30 shadow-lg bg-gray-50 p-2">
+                        <img id="image-preview" src="#" alt="Preview" class="w-full h-auto rounded-xl object-contain max-h-80">
+                        <button type="button" onclick="clearPreview()" class="absolute top-4 right-4 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md transition-colors border-2 border-white">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-gray-100">
+                    <button type="button" onclick="processMeasurement()" id="process-btn" class="w-full premium-btn justify-center text-lg py-5 shadow-xl shadow-gold/20 hover:shadow-gold/40 group relative overflow-hidden">
+                        <span class="relative z-10 flex items-center justify-center space-x-2">
+                            <i class="fas fa-magic text-sm"></i>
+                            <span>Analyze Dimensions</span>
+                        </span>
+                        <div class="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500 mt-14 rounded-full"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Section -->
+        <div class="relative h-full">
+            <div id="results-skeleton" class="premium-card p-8 h-full flex flex-col items-center justify-center text-center bg-gray-50 border-dashed border-2 border-gray-200 animate-pulse">
+                <i class="fas fa-ruler-combined text-6xl text-gray-300 mb-6"></i>
+                <h3 class="text-2xl font-bold text-gray-400 mb-2">Awaiting Image</h3>
+                <p class="text-gray-400 font-medium">Upload your photo and click analyze to see your AI-generated measurements.</p>
+            </div>
+            
+            <div id="results-container" class="hidden premium-card p-8 bg-white h-full shadow-2xl border-gold/30 relative overflow-hidden animate-slide-up">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-gold/10 rounded-bl-full pointer-events-none"></div>
+                
+                <h3 class="text-2xl font-playfair font-bold text-gray-900 mb-8 pb-4 border-b border-gray-100 flex items-center">
+                    <i class="fas fa-clipboard-check text-green-500 mr-3 text-3xl"></i> Your AI Profile
+                </h3>
+                
+                <div class="space-y-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 hover:border-gold/30 transition-colors group">
+                            <span class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 flex items-center group-hover:text-gold transition-colors"><i class="fas fa-arrows-alt-v mr-2"></i> Height</span>
+                            <span id="res-height" class="text-2xl font-bold text-gray-900">-- <span class="text-sm font-normal text-gray-500">cm</span></span>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 hover:border-gold/30 transition-colors group">
+                            <span class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 flex items-center group-hover:text-gold transition-colors"><i class="fas fa-expand-arrows-alt mr-2"></i> Chest</span>
+                            <span id="res-chest" class="text-2xl font-bold text-gray-900">-- <span class="text-sm font-normal text-gray-500">cm</span></span>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 hover:border-gold/30 transition-colors group">
+                            <span class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 flex items-center group-hover:text-gold transition-colors"><i class="fas fa-compress-arrows-alt mr-2"></i> Waist</span>
+                            <span id="res-waist" class="text-2xl font-bold text-gray-900">-- <span class="text-sm font-normal text-gray-500">cm</span></span>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 hover:border-gold/30 transition-colors group">
+                            <span class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 flex items-center group-hover:text-gold transition-colors"><i class="fas fa-people-arrows mr-2"></i> Shoulder</span>
+                            <span id="res-shoulder" class="text-2xl font-bold text-gray-900">-- <span class="text-sm font-normal text-gray-500">cm</span></span>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 hover:border-gold/30 transition-colors group col-span-2">
+                            <span class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 flex items-center group-hover:text-gold transition-colors"><i class="fas fa-long-arrow-alt-right mr-2"></i> Arm Length</span>
+                            <span id="res-arm" class="text-2xl font-bold text-gray-900">-- <span class="text-sm font-normal text-gray-500">cm</span></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 p-6 bg-gradient-to-r from-navy to-gray-800 rounded-3xl text-white shadow-xl relative overflow-hidden">
+                        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmZmZmIj48L3JlY3Q+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNENEFGMzciIGZpbGwtb3BhY2l0eT0iMC4xIj48L3JlY3Q+Cjwvc3ZnPg==')] opacity-10 pointer-events-none"></div>
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-gold/20 rounded-bl-full pointer-events-none"></div>
+                        <div class="relative z-10 flex items-center justify-between">
+                            <div>
+                                <h4 class="text-sm text-gold font-bold tracking-widest uppercase mb-1 drop-shadow-md">Recommended Size</h4>
+                                <p class="text-5xl font-playfair font-bold text-white drop-shadow-lg" id="res-size">--</p>
+                            </div>
+                            <div class="w-16 h-16 rounded-full bg-gold/20 border-2 border-gold/50 flex items-center justify-center">
+                                <i class="fas fa-tshirt text-3xl text-gold"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-6">
+                        <a href="{% url 'shop' %}" class="w-full block text-center py-4 bg-gold hover:bg-dark-gold text-white rounded-xl font-bold transition-colors shadow-lg shadow-gold/30">
+                            Shop Perfect Fit Items <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let imageFile = null;
+
+    function previewImage(event) {
+        const input = event.target;
+        if (input.files && input.files[0]) {
+            imageFile = input.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                document.getElementById('image-preview').src = e.target.result;
+                document.getElementById('image-preview-container').classList.remove('hidden');
+                
+                // Hide skeleton message
+                document.getElementById('results-skeleton').classList.remove('animate-pulse');
+                document.getElementById('results-skeleton').innerHTML = `
+                    <i class="fas fa-check-circle text-6xl text-gold mb-6"></i>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Image Ready</h3>
+                    <p class="text-gray-500 font-medium">Click Analyze Dimensions to process your photo.</p>
+                `;
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function clearPreview() {
+        document.getElementById('file-upload').value = "";
+        document.getElementById('image-preview').src = "#";
+        document.getElementById('image-preview-container').classList.add('hidden');
+        imageFile = null;
+        
+        document.getElementById('results-container').classList.add('hidden');
+        document.getElementById('results-skeleton').classList.remove('hidden');
+        document.getElementById('results-skeleton').classList.add('animate-pulse');
+        document.getElementById('results-skeleton').innerHTML = `
+            <i class="fas fa-image text-6xl text-gray-300 mb-6"></i>
+            <h3 class="text-2xl font-bold text-gray-400 mb-2">Upload Cancelled</h3>
+            <p class="text-gray-400 font-medium">Please upload a photo to continue.</p>
+        `;
+    }
+
+    async function processMeasurement() {
+        const height = document.getElementById('height_cm').value;
+
+        if (!height || !imageFile) {
+            alert("Please provide both height and an image.");
+            return;
+        }
+
+        const btn = document.getElementById('process-btn');
+        const originalBtnText = btn.innerHTML;
+        
+        btn.disabled = true;
+        btn.innerHTML = `<span class="relative z-10 flex items-center justify-center space-x-2"><i class="fas fa-circle-notch fa-spin"></i><span>Analyzing image...</span></span>`;
+        btn.classList.add('opacity-80', 'cursor-not-allowed');
+        
+        document.getElementById('results-skeleton').classList.remove('hidden');
+        document.getElementById('results-container').classList.add('hidden');
+        
+        document.getElementById('results-skeleton').classList.add('animate-pulse');
+        document.getElementById('results-skeleton').innerHTML = `
+            <div class="relative w-24 h-24 mb-6">
+                <div class="absolute inset-0 border-4 border-gray-200 rounded-full"></div>
+                <div class="absolute inset-0 border-4 border-gold rounded-full border-t-transparent animate-spin"></div>
+                <i class="fas fa-robot text-3xl text-gold absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4 bg-gradient-to-r from-gold to-dark-gold text-transparent bg-clip-text">Processing image...</h3>
+            <div class="flex items-center justify-center space-x-2 text-sm font-medium text-gray-500">
+                <i class="fas fa-brain text-gold"></i>
+                <span>Mapping 32 body landmarks</span>
+            </div>
+        `;
+
+        const formData = new FormData();
+        formData.append('image', imageFile);
+        formData.append('height_cm', height);
+
+        try {
+            const response = await fetch('/api/process-measurement/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: formData
+            });
+
+            if(response.ok) {
+                const data = await response.json();
+                
+                document.getElementById('res-height').innerHTML = `${height} <span class="text-sm font-normal text-gray-500">cm</span>`;
+                document.getElementById('res-chest').innerHTML = `${data.chest_cm} <span class="text-sm font-normal text-gray-500">cm</span>`;
+                document.getElementById('res-waist').innerHTML = `${data.waist_cm} <span class="text-sm font-normal text-gray-500">cm</span>`;
+                document.getElementById('res-shoulder').innerHTML = `${data.shoulder_cm} <span class="text-sm font-normal text-gray-500">cm</span>`;
+                document.getElementById('res-arm').innerHTML = `${data.arm_length_cm} <span class="text-sm font-normal text-gray-500">cm</span>`;
+                document.getElementById('res-size').innerText = data.recommended_size;
+
+                document.getElementById('results-skeleton').classList.add('hidden');
+                document.getElementById('results-container').classList.remove('hidden');
+                
+                // Add celebration animation
+                document.getElementById('res-size').classList.add('animate-bounce');
+                setTimeout(() => document.getElementById('res-size').classList.remove('animate-bounce'), 2000);
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.error}`);
+                document.getElementById('results-skeleton').innerHTML = `
+                    <i class="fas fa-exclamation-triangle text-6xl text-red-400 mb-6"></i>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Analysis Failed</h3>
+                    <p class="text-gray-500 font-medium">${errorData.error || 'Could not process image.'}</p>
+                `;
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Network error processing image.");
+            document.getElementById('results-skeleton').innerHTML = `
+                <i class="fas fa-wifi text-6xl text-red-400 mb-6"></i>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Network Error</h3>
+                <p class="text-gray-500 font-medium">Please check your connection and try again.</p>
+            `;
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalBtnText;
+            btn.classList.remove('opacity-80', 'cursor-not-allowed');
+        }
+    }
+</script>
+{% endblock %}

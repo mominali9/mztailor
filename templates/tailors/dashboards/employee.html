@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}Employee Dashboard | MZ Tailors{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-3xl p-8 mb-8 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 opacity-10">
+                <i class="fas fa-hammer text-9xl -mt-5 -mr-5"></i>
+            </div>
+            <div class="relative z-10 block">
+                <h1 class="text-4xl font-playfair font-bold mb-2">Tailor Dashboard</h1>
+                <p class="text-indigo-200">Manage your active manufacturing queue.</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Active Queue -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden h-fit">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                    <h3 class="text-xl font-bold text-gray-900"><i class="fas fa-list text-indigo-500 mr-2"></i> Pending Queue (Paid)</h3>
+                </div>
+                <div class="p-0">
+                    {% for order in active_orders %}
+                        {% if order.status == 'Paid' %}
+                        <div class="p-6 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="font-bold text-lg text-gray-900">Order #{{ order.id }}</h4>
+                                    <p class="text-sm text-gray-500">{{ order.created_at|date:"M d, g:i a" }}</p>
+                                </div>
+                                <form method="post" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                                    <input type="hidden" name="new_status" value="In Progress">
+                                    <button type="submit" class="bg-indigo-100 text-indigo-700 hover:bg-indigo-200 font-bold py-2 px-4 rounded-xl text-sm transition-colors">
+                                        Start Stitching <i class="fas fa-arrow-right ml-1"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="space-y-2 bg-gray-50 rounded-xl p-4">
+                                {% for item in order.items.all %}
+                                    <p class="text-sm font-medium text-gray-700">&bull; {{ item.quantity }}x {{ item.product.name }} ({{ item.variation.size|default:"No Size" }})</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% empty %}
+                    <p class="p-8 text-center text-gray-500 font-medium">No paid orders waiting in the queue.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- In Progress -->
+            <div class="bg-white rounded-3xl shadow-sm border border border-yellow-200 overflow-hidden shadow-yellow-100 h-fit">
+                <div class="p-6 border-b border-yellow-100 flex justify-between items-center bg-yellow-50">
+                    <h3 class="text-xl font-bold text-yellow-900"><i class="fas fa-cut text-yellow-600 mr-2"></i> Currently Stitching</h3>
+                </div>
+                <div class="p-0">
+                    {% for order in active_orders %}
+                        {% if order.status == 'In Progress' %}
+                        <div class="p-6 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="font-bold text-lg text-gray-900">Order #{{ order.id }}</h4>
+                                    <p class="text-sm text-yellow-600 font-medium"><i class="fas fa-spinner fa-spin mr-1"></i> In Progress</p>
+                                </div>
+                                <form method="post" class="inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                                    <input type="hidden" name="new_status" value="Completed">
+                                    <button type="submit" class="bg-green-500 hover:bg-green-600 text-white shadow-lg font-bold py-2 px-4 rounded-xl text-sm transition-all transform hover:scale-105 border-2 border-green-600">
+                                        <i class="fas fa-check mr-1"></i> Mark Completed
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="space-y-2 bg-white rounded-xl p-4 border border-gray-100">
+                                {% for item in order.items.all %}
+                                    <p class="text-sm font-medium text-gray-700">&bull; {{ item.quantity }}x {{ item.product.name }} ({{ item.variation.size|default:"No Size" }})</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% empty %}
+                    <p class="p-8 text-center text-gray-500 font-medium">No orders currently being stitched.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

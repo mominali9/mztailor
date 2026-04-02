@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from .models import Article, Service, Testimonial, Category, Video, Logo, Statistics
-from .forms import ContactForm, TestimonialForm
+from tailors.models.base_models import Article, Service, Testimonial, Category, Video, Logo, Statistics
+from tailors.forms import ContactForm, TestimonialForm
 
 def home(request):
     articles = Article.objects.filter(is_published=True)[:3]

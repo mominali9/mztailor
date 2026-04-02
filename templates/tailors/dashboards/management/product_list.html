@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Manage Products | Admin{% endblock %}
+
+{% block content %}
+<div class="bg-gray-900 min-h-screen text-white pt-24 pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-4xl font-playfair font-bold text-gold">Product Management</h1>
+                <p class="text-gray-400 mt-2">Manage your premium tailored collection</p>
+            </div>
+            <a href="{% url 'product_create' %}" class="bg-gold hover:bg-dark-gold text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-gold/20">
+                <i class="fas fa-plus"></i> Add New Product
+            </a>
+        </div>
+
+        <div class="premium-card overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="border-b border-white/10 bg-white/5">
+                            <th class="px-6 py-4 text-gold font-bold uppercase text-xs tracking-wider">Product</th>
+                            <th class="px-6 py-4 text-gold font-bold uppercase text-xs tracking-wider">Category</th>
+                            <th class="px-6 py-4 text-gold font-bold uppercase text-xs tracking-wider">Price</th>
+                            <th class="px-6 py-4 text-gold font-bold uppercase text-xs tracking-wider text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+                        {% for product in products %}
+                        <tr class="hover:bg-white/5 transition-colors group">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-4">
+                                    {% if product.image %}
+                                        <img src="{{ product.image.url }}" class="w-12 h-12 rounded-lg object-cover ring-2 ring-gold/20">
+                                    {% else %}
+                                        <div class="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center border border-white/10">
+                                            <i class="fas fa-tshirt text-gold"></i>
+                                        </div>
+                                    {% endif %}
+                                    <span class="font-semibold">{{ product.name }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="bg-navy/50 text-gold px-3 py-1 rounded-full text-xs border border-gold/20">
+                                    {{ product.category.name }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 font-bold text-white">£{{ product.price }}</td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex justify-end gap-2">
+                                    <a href="{% url 'product_edit' product.pk %}" class="p-2 bg-blue-500/10 text-blue-400 hover:bg-blue-500 hover:text-white rounded-lg transition-all" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'product_delete' product.pk %}" class="p-2 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-all" title="Delete" onclick="return confirm('Are you sure you want to delete this product?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

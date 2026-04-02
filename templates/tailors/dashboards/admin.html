@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard | MZ Tailors{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen py-12">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-gradient-to-r from-gray-900 to-black rounded-3xl p-8 mb-8 text-white shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 opacity-10">
+                <i class="fas fa-crown text-9xl -mt-5 -mr-5"></i>
+            </div>
+            <div class="relative z-10 block">
+                <h1 class="text-4xl font-playfair font-bold mb-2">Admin Dashboard</h1>
+                <p class="text-gray-400">Welcome SuperUser. Here is your overview.</p>
+            </div>
+        </div>
+        
+        <!-- Management Hub -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
+            <a href="{% url 'manage_products' %}" class="flex flex-col items-center justify-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:border-gold transition-all duration-300 group">
+                <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <span class="font-bold text-gray-900">Manage Products</span>
+                <span class="text-xs text-gray-500 mt-1">Inventory & Details</span>
+            </a>
+            <a href="{% url 'manage_categories' %}" class="flex flex-col items-center justify-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:border-gold transition-all duration-300 group">
+                <div class="w-14 h-14 bg-pink-50 text-pink-600 rounded-full flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-tags"></i>
+                </div>
+                <span class="font-bold text-gray-900">Categories</span>
+                <span class="text-xs text-gray-500 mt-1">Shop Structure</span>
+            </a>
+            <a href="{% url 'manage_services' %}" class="flex flex-col items-center justify-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl hover:border-gold transition-all duration-300 group">
+                <div class="w-14 h-14 bg-gold/10 text-gold rounded-full flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-cut"></i>
+                </div>
+                <span class="font-bold text-gray-900">Tailoring Services</span>
+                <span class="text-xs text-gray-500 mt-1">Pricing & Options</span>
+            </a>
+            <div class="flex flex-col items-center justify-center p-6 bg-white/50 rounded-2xl shadow-sm border border-gray-100 opacity-50 cursor-not-allowed">
+                <div class="w-14 h-14 bg-green-50 text-green-600 rounded-full flex items-center justify-center text-2xl mb-4">
+                    <i class="fas fa-envelope-open-text"></i>
+                </div>
+                <span class="font-bold text-gray-900">Customer Queries</span>
+                <span class="text-xs text-gray-500 mt-1">Coming Soon</span>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between hover:shadow-md transition-shadow">
+                <div>
+                    <p class="text-sm text-gray-500 font-semibold mb-1 uppercase tracking-wider">Total Revenue</p>
+                    <p class="text-3xl font-black text-gray-900">£{{ total_revenue|floatformat:2 }}</p>
+                </div>
+                <div class="w-14 h-14 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-2xl shadow-inner">
+                    <i class="fas fa-pound-sign"></i>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 font-semibold mb-1">In Progress (Stitching)</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ in_progress_count }}</p>
+                </div>
+                <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-xl">
+                    <i class="fas fa-cut"></i>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 font-semibold mb-1">Completed Orders</p>
+                    <p class="text-3xl font-bold text-gray-900">{{ completed_count }}</p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 class="text-xl font-bold text-gray-900">All Master Orders</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-white text-gray-500 text-sm uppercase tracking-wider border-b border-gray-200">
+                            <th class="p-4 font-semibold">Order ID</th>
+                            <th class="p-4 font-semibold">Customer</th>
+                            <th class="p-4 font-semibold">Date</th>
+                            <th class="p-4 font-semibold">Total</th>
+                            <th class="p-4 font-semibold">Status</th>
+                            <th class="p-4 font-semibold">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 text-sm md:text-base">
+                        {% for order in orders %}
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="p-4 font-bold text-gray-900">#{{ order.id }}</td>
+                            <td class="p-4 font-medium">{{ order.user.username|default:"Guest" }}</td>
+                            <td class="p-4 text-gray-500">{{ order.created_at|date:"M d, Y" }}</td>
+                            <td class="p-4 font-semibold text-gray-900">£{{ order.total_amount }}</td>
+                            <td class="p-4">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold 
+                                    {% if order.status == 'Pending Payment' %}bg-red-100 text-red-700
+                                    {% elif order.status == 'Paid' %}bg-blue-100 text-blue-700
+                                    {% elif order.status == 'In Progress' %}bg-yellow-100 text-yellow-700
+                                    {% elif order.status == 'Completed' %}bg-green-100 text-green-700
+                                    {% else %}bg-gray-100 text-gray-700{% endif %}">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                            <td class="p-4">
+                                <a href="/admin/tailors/order/{{ order.id }}/change/" class="text-gold hover:text-dark-gold font-bold text-sm">Manage</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="p-8 text-center text-gray-500">No recent orders found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
